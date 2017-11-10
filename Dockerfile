@@ -1,28 +1,30 @@
 # Pgpool2.
 
-FROM alpine:3.5
+FROM alpine:3.6
 
-ENV PGPOOL_VERSION 3.6.1
+ENV PGPOOL_VERSION 3.6.7
 
-ENV PG_VERSION 9.6.1-r0
+ENV PG_VERSION 9.6.5-r0
 
 ENV LANG en_US.utf8
-    
-RUN apk --update --no-cache add libpq=${PG_VERSION} postgresql-dev=${PG_VERSION} postgresql-client=${PG_VERSION} \
-                                linux-headers gcc make libgcc g++ \
-                                libffi-dev python python-dev py2-pip libffi-dev && \
-    cd /tmp && \ 
+
+RUN apk --update --no-cache --virtual .build-deps add \
+        postgresql-dev=${PG_VERSION} linux-headers gcc make libgcc g++ libmemcached-dev cyrus-sasl-dev && \
+    apk --update --no-cache add libpq=${PG_VERSION} postgresql-client=${PG_VERSION} \
+        libffi-dev python python-dev py2-pip && \
+    cd /tmp && \
     wget http://www.pgpool.net/mediawiki/images/pgpool-II-${PGPOOL_VERSION}.tar.gz -O - | tar -xz && \
     chown root:root -R /tmp/pgpool-II-${PGPOOL_VERSION} && \
     cd /tmp/pgpool-II-${PGPOOL_VERSION} && \
     ./configure --prefix=/usr \
                 --sysconfdir=/etc \
                 --mandir=/usr/share/man \
-                --infodir=/usr/share/info && \
+                --infodir=/usr/share/info \
+                --with-memcached=/usr && \
     make && \
     make install && \
     rm -rf /tmp/pgpool-II-${PGPOOL_VERSION} && \
-    apk del postgresql-dev linux-headers gcc make libgcc g++
+    apk del .build-deps
 
 RUN pip install Jinja2
 
