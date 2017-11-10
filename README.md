@@ -48,3 +48,5 @@ services:
 **PGPOOL_PORT** - The port used by pgpool2 to listen for client connections. (default: 5432)
 
 **PGPOOL_BACKENDS** - A comma separated list of PostgeSQL server backends. The format for each backend is as follows: INDEX:HOST:PORT (default: 1:localhost:5432)
+
+**PGPOOL_MEMCACHED** - A comma separated of Memcached. The format is as follows: HOST:PORT (default: localhost:11211)

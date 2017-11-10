@@ -504,7 +504,7 @@ wd_escalation_command = ''
                                     # Executes this command at escalation on new active pgpool.
                                     # (change requires restart)
 
-# - Lifecheck Setting - 
+# - Lifecheck Setting -
 
 # -- common --
 
@@ -620,16 +620,16 @@ check_temp_table = on
 #------------------------------------------------------------------------------
 memory_cache_enabled = off
 								   # If on, use the memory cache functionality, off by default
-memqcache_method = 'shmem'
+memqcache_method = 'memcached'
 								   # Cache storage method. either 'shmem'(shared memory) or
 								   # 'memcached'. 'shmem' by default
                                    # (change requires restart)
-memqcache_memcached_host = 'localhost'
+memqcache_memcached_host = {{ pgpool_memcached_host }}
 								   # Memcached host name or IP address. Mandatory if
 								   # memqcache_method = 'memcached'.
 								   # Defaults to localhost.
                                    # (change requires restart)
-memqcache_memcached_port = 11211
+memqcache_memcached_port = {{ pgpool_memcached_port }}
 								   # Memcached port number. Mondatory if memqcache_method = 'memcached'.
 								   # Defaults to 11211.
                                    # (change requires restart)

@@ -2,12 +2,15 @@ version: '3'
 services:
   mypostgres:
     image: postgres:9.6-alpine
-
+  mymemcached:
+    image: memcached:1.5-alpine
   pgpool2:
-    image: manuc66/pgpool2-container-alpine:latest
-    depends_on: 
+    image: leonisandco/pgpool2-container:latest
+    depends_on:
       - mypostgres
+      - mymemcached
     environment:
       - PGPOOL_BACKENDS=1:mypostgres:5432
+      - PGPOOL_MEMCACHED=mymemcached:11211
     ports:
       - 5432:5432/tcp
