@@ -29,6 +29,22 @@ def pgpool_get_configuration():
 		if not len(item.split(':')) == 3:
 			raise ValueError('Invalid Backend: %s' % item)
 	configuration.update({ 'pgpool_backends': value })
+
+        value = os.getenv('PGPOOL_MEMCACHED')
+        if value is None:
+            configuration.update({
+                'pgpool_memcached_enabled': 'off',
+                'pgpool_memcached_host': '',
+                'pgpool_memcached_port': ''
+            })
+        else:
+            value = os.getenv('PGPOOL_MEMCACHED').split(':')
+            configuration.update({
+                'pgpool_memcached_enabled': 'on',
+                'pgpool_memcached_host': value[0],
+                'pgpool_memcached_port': value[1]
+            })
+
 	return configuration
 
 def run(app, *args):
