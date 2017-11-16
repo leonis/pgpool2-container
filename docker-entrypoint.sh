@@ -12,7 +12,6 @@ if [ "$1" = 'pgpool' ]; then
   sed -i "s:listen_addresses = '.*':listen_addresses = '$IP_ADDR':g" /etc/pgpool2/pgpool.conf
 
   gosu postgres "$@"
-  
 fi
 
 exec "$@"

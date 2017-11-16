@@ -618,7 +618,7 @@ check_temp_table = on
 #------------------------------------------------------------------------------
 # ON MEMORY QUERY MEMORY CACHE
 #------------------------------------------------------------------------------
-memory_cache_enabled = off
+memory_cache_enabled = {{ pgpool_memcached_enabled }}
 								   # If on, use the memory cache functionality, off by default
 memqcache_method = 'memcached'
 								   # Cache storage method. either 'shmem'(shared memory) or
