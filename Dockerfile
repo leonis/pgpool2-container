@@ -10,7 +10,7 @@ ENV LANG en_US.utf8
 
 RUN apk --update --no-cache --virtual .build-deps add \
         postgresql-dev=${PG_VERSION} linux-headers gcc make libgcc g++ libmemcached-dev cyrus-sasl-dev && \
-    apk --update --no-cache add libpq=${PG_VERSION} postgresql-client=${PG_VERSION} \
+    apk --update --no-cache add libpq=${PG_VERSION} postgresql-client=${PG_VERSION} libmemcached-libs \
         libffi-dev python python-dev py2-pip && \
     cd /tmp && \
     wget http://www.pgpool.net/mediawiki/images/pgpool-II-${PGPOOL_VERSION}.tar.gz -O - | tar -xz && \
