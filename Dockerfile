@@ -17,7 +17,7 @@ RUN set -ex; \
 
 ##### pgpool2
 FROM alpine:3.6
-ENV PGPOOL_VERSION 3.6.7
+ENV PGPOOL_VERSION 3.7.0
 ENV PG_VERSION 9.6.6-r0
 ENV LANG en_US.utf8
 COPY --from=gosu /usr/local/bin/gosu /usr/local/bin/gosu
