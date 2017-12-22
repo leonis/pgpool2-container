@@ -6,44 +6,77 @@ from subprocess import check_call
 import hashlib
 import os
 
-def pgpool_get_configuration():
-	configuration = { }
+def get_pcp_config(config):
 	# Get the port pcp should listen on.
 	value = os.getenv('PCP_PORT', 9898)
-	configuration.update({ 'pcp_port': value })
+	config.update({ 'pcp_port': value })
+
 	# Get the PCP user.
 	value = os.getenv('PCP_USER', 'postgres')
-	configuration.update({ 'pcp_user': value })
+	config.update({ 'pcp_user': value })
+
 	# Get the PCP user password.
 	value = os.getenv('PCP_USER_PASSWORD', 'bettervoice')
 	hash = hashlib.md5()
 	hash.update(value)
-	configuration.update({ 'pcp_user_password': hash.hexdigest() })
-	# Get the port pgpool should listen on.
-	value = os.getenv('PGPOOL_PORT', 5432)
-	configuration.update({ 'pgpool_port': value })
+	config.update({ 'pcp_user_password': hash.hexdigest() })
+        return config
+
+def get_memcached_configuration(config):
+        value = os.getenv('PGPOOL_MEMCACHED')
+        if value is None:
+            config.update({
+                'pgpool_memcached_enabled': 'off',
+                'pgpool_memcached_host': 'localhost',
+                'pgpool_memcached_port': '11211'
+            })
+        else:
+            value = os.getenv('PGPOOL_MEMCACHED').split(':')
+            config.update({
+                'pgpool_memcached_enabled': 'on',
+                'pgpool_memcached_host': value[0],
+                'pgpool_memcached_port': value[1]
+            })
+
+        return config
+
+def get_backends_configuration(config):
 	# Get the configuration for the backends.
 	# FORMAT - INDEX:HOST:PORT
 	value = os.getenv('PGPOOL_BACKENDS', '1:localhost:5432').split(',')
 	for item in value:
 		if not len(item.split(':')) == 3:
 			raise ValueError('Invalid Backend: %s' % item)
-	configuration.update({ 'pgpool_backends': value })
+	config.update({ 'pgpool_backends': value })
 
-        value = os.getenv('PGPOOL_MEMCACHED')
-        if value is None:
-            configuration.update({
-                'pgpool_memcached_enabled': 'off',
-                'pgpool_memcached_host': '',
-                'pgpool_memcached_port': ''
-            })
-        else:
-            value = os.getenv('PGPOOL_MEMCACHED').split(':')
-            configuration.update({
-                'pgpool_memcached_enabled': 'on',
-                'pgpool_memcached_host': value[0],
-                'pgpool_memcached_port': value[1]
-            })
+        return config
+
+def get_connection_pool_config(config):
+	# Get the port pgpool should listen on.
+	value = os.getenv('PGPOOL_PORT', 5432)
+	config.update({ 'pgpool_port': value })
+
+        # Get the number of pools
+	value = os.getenv('PGPOOL_NUM_INIT_CHILDREN', 32)
+        config.update({ 'pgpool_num_init_children': value })
+
+        # Get the number of connections per pool
+        value = os.getenv('PGPOOL_MAX_POOL', 4)
+        config.update({ 'pgpool_max_pool': value })
+
+        return config
+
+
+def pgpool_get_configuration():
+	configuration = { }
+
+        get_pcp_config(configuration)
+
+        get_backends_configuration(configuration)
+
+        get_memcached_configuration(configuration)
+
+        get_connection_pool_config(configuration)
 
 	return configuration
 
@@ -61,9 +94,11 @@ if __name__ == "__main__":
 	# Load the configuration into a dictionary.
 	configuration = pgpool_get_configuration()
 	# Write PCP user credentials.
-	pcp = templates.get_template('pcp.conf.template') \
-								 .render(configuration)
+	pcp = templates.get_template('pcp.conf.template')\
+                .render(configuration)
 	write(pcp, '/etc/pgpool2/pcp.conf')
-	pgpool = templates.get_template('pgpool.conf.template') \
-										.render(configuration)
+
+	pgpool = templates.get_template('pgpool.conf.template')\
+                .render(configuration)
 	write(pgpool, '/etc/pgpool2/pgpool.conf')
+

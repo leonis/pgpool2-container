@@ -29,7 +29,7 @@ services:
 
   pgpool2:
     image: manuc66/pgpool2-container-alpine:latest
-    depends_on: 
+    depends_on:
       - mypostgres
     environment:
       - PGPOOL_BACKENDS=1:mypostgres:5432
@@ -49,4 +49,8 @@ services:
 
 **PGPOOL_BACKENDS** - A comma separated list of PostgeSQL server backends. The format for each backend is as follows: INDEX:HOST:PORT (default: 1:localhost:5432)
 
-**PGPOOL_MEMCACHED** - A comma separated of Memcached. The format is as follows: HOST:PORT (default: localhost:11211)
+**PGPOOL_MEMCACHED** - A comma separated of Memcached. The format is as follows: HOST:PORT. Memcached config enabled if `PGPOOL_MEMCACHED` environment variable defined. (default: off)
+
+**PGPOOL_NUM_INIT_CHILDREN** - The number of pools (default: 32)
+
+**PGPOOL_MAX_POOL** - The number of connections per pool (default: 4)
