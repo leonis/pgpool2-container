@@ -24,7 +24,7 @@ def get_pcp_config(config):
 
 def get_memcached_configuration(config):
         value = os.getenv('PGPOOL_MEMCACHED')
-        if value is None:
+        if value is None or not value:
             config.update({
                 'pgpool_memcached_enabled': 'off',
                 'pgpool_memcached_host': 'localhost',
